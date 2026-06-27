@@ -1,0 +1,64 @@
+version: '3.9'
+
+networks:
+  frontend-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.1.0/24
+
+  backend-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.2.0/24
+
+services:
+  frontend:
+    build: ./frontend
+    container_name: frontend-app
+    ports:
+      - "8081:80"
+    networks:
+      - frontend-network
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      network: host          # ← ESTA LINHA É A SOLUÇÃO
+    container_name: backend-api
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=mysql-db
+      - DB_USER=root
+      - DB_PASSWORD=DevOpsLab2025
+      - DB_NAME=fullstack_lab
+    networks:
+      - frontend-network
+      - backend-network
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: DevOpsLab2025
+      MYSQL_DATABASE: fullstack_lab
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pDevOpsLab2025"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mysql-data:
