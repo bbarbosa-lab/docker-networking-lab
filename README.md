@@ -28,12 +28,14 @@ This lab showcases a real-world scenario where users can **register** and **logi
 ![Architecture Diagram](diagrams/architecture.png)
 
 ### Architecture Explanation
+Note that i'am using DHCP for IP Adressing in this project, so the IPS my vary on when you run your version locally.
+The network is 172.30.1.0/24 for the frontend and 172.30.2.0/24 for the database, the user from the frontend can't acess the database, for that the admin can create a vlan.
 
 | Layer          | Container          | Network                  | IP Address          | Exposed Port | Responsibility                     |
 |----------------|--------------------|--------------------------|---------------------|--------------|------------------------------------|
-| **Frontend**   | `frontend-app`     | `frontend-network`       | `172.30.1.10`       | `8081`       | Web interface (Nginx)              |
-| **Backend**    | `backend-api`      | `frontend-network` + `backend-network` | `172.30.1.11` / `172.30.2.10` | `5000` | REST API + Authentication logic    |
-| **Database**   | `mysql-db`         | `backend-network`        | `172.30.2.20`       | -            | MySQL 8.0 (users with hashed passwords) |
+| **Frontend**   | `frontend-app`     | `frontend-network`       | `172.30.1.0/24`       | `8081`       | Web interface (Nginx)              |
+| **Backend**    | `backend-api`      | `frontend-network` + `backend-network` | `172.30.1.0/24` / `172.30.2.0/24` | `5000` | REST API + Authentication logic    |
+| **Database**   | `mysql-db`         | `backend-network`        | `172.30.2.0/24`       | -            | MySQL 8.0 (users with hashed passwords) |
 
 **Key Networking Concept**: The `backend-api` is a **multi-homed container** — it belongs to both networks at the same time. This allows it to receive requests from the frontend while securely accessing the database without exposing the database to the frontend network.
 
