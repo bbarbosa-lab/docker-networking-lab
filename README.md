@@ -29,7 +29,6 @@ This lab showcases a real-world scenario where users can **register** and **logi
 
 ### Architecture Explanation
 Note that i'am using DHCP for IP Adressing in this project, so the IPS my vary on when you run your version locally.
-The network is 172.30.1.0/24 for the frontend and 172.30.2.0/24 for the database, the user from the frontend can't acess the database, for that the admin can create a vlan.
 
 | Layer          | Container          | Network                  | IP Address          | Exposed Port | Responsibility                     |
 |----------------|--------------------|--------------------------|---------------------|--------------|------------------------------------|
